@@ -1,0 +1,44 @@
+name: Test
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - windows-2025
+          - windows-11-arm
+          - macos-26-intel
+          - macos-26
+        repo:
+          - 63e10e968a4a705ee66f7198adbc70301b3470eb # master
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: jurplel/install-qt-action
+          ref: ${{ matrix.repo }}
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: action/
+
+      - run: |
+          pushd action
+          npm ci || npm install
+          npm run build
+          popd
+          sed -i.bak 's|uses: $/action|uses: ./action|' action.yml
+          diff -u action.yml.bak action.yml || true
+          git status --porcelain
+
+      - name: Install Qt
+        uses: ./
+        # with:
+          # aqtsource: git+https://github.com/miurahr/aqtinstall.git@076e1659807d0b362a3ed684d54c2e9c775eb9c7
