@@ -39,7 +39,16 @@ jobs:
           git status --porcelain
         shell: bash
 
-      - name: Install Qt
+      - name: Install Qt 6.8.1
         uses: ./
-        # with:
+        with:
+          version: 6.8.1
+          target: android
+          # aqtsource: git+https://github.com/miurahr/aqtinstall.git@076e1659807d0b362a3ed684d54c2e9c775eb9c7
+
+      - name: Install Qt 6.8.3
+        uses: ./
+        with:
+          version: 6.8.3
+          target: android
           # aqtsource: git+https://github.com/miurahr/aqtinstall.git@076e1659807d0b362a3ed684d54c2e9c775eb9c7
